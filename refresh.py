@@ -5,12 +5,11 @@ import json
 
 
 def wrapper_over_requests_get():
-    #TODO. Need to save memory.
+    # TODO. Need to save memory.
     pass
 
 
-
-DEFAULTS = {'russian': set(str(x) for x in range(1, 27))}
+DEFAULTS = {'russian': set(str(x) for x in range(4, 22))}
 
 
 def default_or_not(subject, number):
@@ -22,7 +21,7 @@ def default_or_not(subject, number):
 
 def html_in_text_with_new_line_support(html: bs4.BeautifulSoup):
     """ Parses new line tags in \n. And returns text """
-    return html.get_text(separator="\n")
+    return (html.get_text(separator="\n")).replace('&nbsp', ' ')
 
 
 def parse_tasks(link: str, subject=None, number=None):
@@ -42,7 +41,41 @@ def parse_tasks(link: str, subject=None, number=None):
                 yield {"id": id, "question": question, "answer": answer, "solution": solution}
             if not len(tasks):
                 break
-
+    elif subject == "russian" and number in ['26', '25', '24', '23', '22']:
+        for page in range(1, 100):
+            html = requests.get(link, params={"page": page}).text
+            html = bs4.BeautifulSoup(html, features='lxml')
+            tasks = html.find_all(name="div", attrs={"class": "problem_container"})
+            for task in tasks:
+                id = task.find(name="span", attrs={"class": "prob_nums"}).find(name="a").text
+                text = html_in_text_with_new_line_support(
+                    task.find(name="div", attrs={"class": "probtext"}))
+                question = text + '\n\n' + html_in_text_with_new_line_support(
+                    task.find(name="div", attrs={"class": "pbody"}))
+                answer = task.find_all(name="div", attrs={"class": "answer"})[-1].text
+                solution = html_in_text_with_new_line_support(task.find_all(
+                    name="div", attrs={"class": "nobreak solution"})[-1])
+                yield {"id": id, "question": question, "answer": answer, "solution": solution}
+            if not len(tasks):
+                break
+    elif subject == "russian" and number in ['1', '2', '3']:
+        for page in range(1, 100):
+            html = requests.get(link, params={"page": page}).text.replace("<...>", "______").\
+                replace("<....>", "______").replace("<…>", "______")
+            html = bs4.BeautifulSoup(html, features='lxml')
+            tasks = html.find_all(name="div", attrs={"class": "problem_container"})
+            for task in tasks:
+                id = task.find(name="span", attrs={"class": "prob_nums"}).find(name="a").text
+                text = html_in_text_with_new_line_support(
+                    task.find(name="div", attrs={"class": "probtext"}))
+                question = text + '\n\n' + html_in_text_with_new_line_support(
+                    task.find(name="div", attrs={"class": "pbody"}))
+                answer = task.find_all(name="div", attrs={"class": "answer"})[-1].text
+                solution = html_in_text_with_new_line_support(task.find_all(
+                    name="div", attrs={"class": "nobreak solution"})[-1])
+                yield {"id": id, "question": question, "answer": answer, "solution": solution}
+            if not len(tasks):
+                break
 
 def subject_to_link(path="start_links"):
     """ Returns dict {"$subject": "$link", ...} """
@@ -73,7 +106,8 @@ def parse_link_to_tasks(start_link):
 
 
 def links_refresh():
-    """ Refreshes links to cur subject numbers """
+    """ Refreshes links to cur subject numbers. WARNING! May skip some links. It's better to check by hand after func.
+        Also you can merge two/three/four... json files. """
     subjects = subject_to_link()
     for subject in subjects:
         link = subjects[subject]
@@ -103,7 +137,8 @@ def tasks_refresh():
 
 
 def get_tasks(subject, number, nums=None):
-    #TODO
+    """ Now this is just only a primitive health check. """
+    # TODO
     if nums is None:
         nums = 10
     data = {}
@@ -115,6 +150,8 @@ def get_tasks(subject, number, nums=None):
 
 
 if __name__ == '__main__':
-    #links_refresh()
-    #tasks_refresh()
-    get_tasks('russian', '5')
+    # links_refresh()
+    tasks_refresh()
+    #tasks = list(parse_tasks("https://rus-ege.sdamgia.ru/test?theme=231", 'russian', '24'))
+    #print(tasks)
+    #get_tasks('russian', '1')
