@@ -94,14 +94,17 @@ def parse_link_to_tasks(start_link):
     for theme in range(1, 1000):
         link = f"{start_link}test?theme={theme}"
         html = requests.get(link).text
-        if len(html) < 130000:
+        if len(html) < 10000:
             continue
         html = bs4.BeautifulSoup(html, features='lxml')
-        number = ''.join([x for x in html.find(
-            name="span", attrs={"class": "prob_nums"}).text.split("№")[0][8:].strip()])
-        if number not in output:
-            output[number] = []
-        output[number].append(link)
+        try:
+            number = ''.join([x for x in html.find(
+                name="span", attrs={"class": "prob_nums"}).text.split("№")[0][8:].strip()])
+            if number not in output:
+                output[number] = []
+            output[number].append(link)
+        except:
+            continue
     return output
 
 
