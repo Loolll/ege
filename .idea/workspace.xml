@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="761bc1d8-f280-4f52-ae00-221c358d05f3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/refresh.py" beforeDir="false" afterPath="$PROJECT_DIR$/refresh.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/russian.json" beforeDir="false" afterPath="$PROJECT_DIR$/data/russian.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -64,7 +64,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
